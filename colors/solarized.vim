@@ -125,7 +125,7 @@
 " :help group-name
 "
 " Useful links for developing colorschemes:
-" http://www.vim.org/scripts/script.php?script_id=2937
+" http://www.vim.org/scripts/
 " http://vimcasts.org/episodes/creating-colorschemes-for-vim/
 " http://www.frexx.de/xterm-256-notes/"
 "
@@ -809,7 +809,7 @@ exe "hi! rubyDefine"     . s:fg_base1  .s:bg_back   .s:fmt_bold
 " haskell syntax highlighting"{{{
 " ---------------------------------------------------------------------
 " For use with syntax/haskell.vim : Haskell Syntax File
-" http://www.vim.org/scripts/script.php?script_id=3034
+" http://www.vim.org/scripts/
 " See also Steffen Siering's github repository:
 " http://github.com/urso/dotrc/blob/master/vim/syntax/haskell.vim
 " ---------------------------------------------------------------------

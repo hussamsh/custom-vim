@@ -43,7 +43,6 @@ return {
 					"javascriptreact",
 					"typescript",
 					"typescriptreact",
-					"php",
 				},
 			})
 
@@ -53,18 +52,20 @@ return {
 
 			require("mason-lspconfig").setup({
 				ensure_installed = {
+					"basedpyright",
 					"bashls",
 					"cssls",
 					"html",
-					"intelephense",
 					"jsonls",
 					"lua_ls",
+					"ruff",
 					"tailwindcss",
+					"taplo",
 					"ts_ls",
 					"yamlls",
 				},
 				automatic_enable = {
-					exclude = { "stylua" },
+					exclude = { "rust_analyzer", "stylua" },
 				},
 			})
 		end,
@@ -76,9 +77,11 @@ return {
 		cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
 		opts = {
 			ensure_installed = {
+				"codelldb",
+				"debugpy",
 				"eslint_d",
 				"prettier",
-				"php-cs-fixer",
+				"rust-analyzer",
 				"shfmt",
 				"stylua",
 				"tree-sitter-cli",

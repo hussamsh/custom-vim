@@ -39,6 +39,7 @@ installs language servers, formatters, linters, and the Treesitter CLI.
 
 ```text
 .
+├── AGENTS.md
 ├── init.lua
 ├── lazy-lock.json
 ├── docs
@@ -54,11 +55,16 @@ installs language servers, formatters, linters, and the Treesitter CLI.
 │   └── plugins
 │       ├── colorscheme.lua
 │       ├── completion.lua
+│       ├── debug.lua
 │       ├── editing.lua
 │       ├── files.lua
 │       ├── format.lua
 │       ├── git.lua
 │       ├── lsp.lua
+│       ├── markdown.lua
+│       ├── python.lua
+│       ├── rust.lua
+│       ├── test.lua
 │       ├── treesitter.lua
 │       └── ui.lua
 ├── colors
@@ -70,6 +76,7 @@ Additional docs:
 - [Keymaps](docs/KEYMAPS.md)
 - [Plugin Architecture](docs/PLUGINS.md)
 - [Maintenance](docs/MAINTENANCE.md)
+- [Agent Instructions](AGENTS.md)
 
 ## Core Configuration
 
@@ -172,7 +179,11 @@ Defined in `lua/plugins/treesitter.lua`.
 
 Treesitter provides modern syntax highlighting, indentation, folding, and
 injections. The config installs parsers for Bash, CSS, HTML, JavaScript, JSON,
-Lua, Markdown, PHP, Python, TSX, TypeScript, Vim, Vimdoc, and YAML.
+Lua, Markdown, Python, Rust, TOML, TSX, TypeScript, Vim, Vimdoc, and YAML.
+
+TOML support includes the Treesitter parser, `taplo` LSP, and `taplo`
+formatting through Conform. This covers project files such as `Cargo.toml`,
+`pyproject.toml`, and other TOML config files.
 
 Run this after plugin updates:
 
@@ -194,24 +205,34 @@ It intentionally avoids the deprecated
 
 Installed LSP servers:
 
+- Python: `basedpyright`, `ruff`
 - Bash: `bashls`
 - CSS: `cssls`
 - HTML: `html`
 - JSON: `jsonls`
 - Lua: `lua_ls`
-- PHP: `intelephense`
 - Tailwind CSS: `tailwindcss`
+- TOML: `taplo`
 - TypeScript/JavaScript: `ts_ls`
 - YAML: `yamlls`
 
 Mason-managed tools:
 
+- `basedpyright`
+- `codelldb`
+- `debugpy`
+- `rust-analyzer`
+- `ruff`
+- `taplo`
 - `tree-sitter-cli`
 - `prettier`
 - `stylua`
-- `php-cs-fixer`
 - `shfmt`
 - `eslint_d`
+
+Rust is handled by `rustaceanvim` instead of `mason-lspconfig` so it can expose
+Rust-specific actions, runnables, testables, macro expansion, and LLDB-backed
+debuggables without conflicting with a generic `rust_analyzer` setup.
 
 Useful LSP defaults from Neovim include:
 
@@ -247,6 +268,23 @@ Useful completion keys:
 | `<C-space>` | Show completion/documentation |
 | `<C-y>` | Accept selected completion |
 
+### Markdown
+
+Defined in `lua/plugins/markdown.lua`.
+
+- `render-markdown.nvim` provides an in-editor rendered preview for Markdown.
+- It uses Treesitter and devicons; it does not require a browser, Node, or an
+  external Markdown server.
+- Use `<leader>mp` to toggle preview rendering in Markdown buffers.
+
+Useful mappings:
+
+| Mapping | Action |
+| --- | --- |
+| `<leader>mp` | Toggle Markdown preview |
+| `<leader>me` | Expand Markdown preview |
+| `<leader>mc` | Contract Markdown preview |
+
 ### Formatting and Linting
 
 Defined in `lua/plugins/format.lua`.
@@ -255,7 +293,9 @@ Defined in `lua/plugins/format.lua`.
 
 - `prettier` for web formats
 - `stylua` for Lua
-- `php-cs-fixer` for PHP
+- `ruff` for Python imports and formatting
+- `rustfmt` for Rust
+- `taplo` for TOML
 - `shfmt` for shell scripts
 
 Manual format:
@@ -265,6 +305,51 @@ Manual format:
 ```
 
 `nvim-lint` runs `eslint_d` for JavaScript and TypeScript projects.
+
+### Python
+
+Defined in `lua/plugins/python.lua`, `lua/plugins/debug.lua`,
+`lua/plugins/test.lua`, `lua/plugins/lsp.lua`, and `lua/plugins/format.lua`.
+
+- `basedpyright` provides Python type checking and language intelligence.
+- `ruff` provides fast lint diagnostics, import organization, and formatting.
+- `venv-selector.nvim` switches project virtualenvs with `<leader>cv`.
+- `nvim-dap-python` uses Mason's `debugpy-adapter` for Python debugging.
+- `neotest-python` runs and debugs pytest tests through neotest.
+
+### Rust
+
+Defined in `lua/plugins/rust.lua`, with debug and test support from
+`lua/plugins/debug.lua` and `lua/plugins/test.lua`.
+
+- `rustaceanvim` owns `rust-analyzer` setup and Rust-specific commands.
+- `rustfmt` formats Rust files through Conform.
+- `codelldb` provides the debug adapter for Rust debugging.
+- neotest integrates with rustaceanvim for Rust test runs.
+
+Useful Rust mappings are buffer-local to Rust files:
+
+| Mapping | Action |
+| --- | --- |
+| `<leader>ra` | Rust code action |
+| `<leader>rh` | Rust hover actions |
+| `<leader>rr` | Rust runnables |
+| `<leader>rt` | Rust testables |
+| `<leader>rd` | Rust debuggables |
+| `<leader>rm` | Expand macro |
+
+Useful test/debug mappings:
+
+| Mapping | Action |
+| --- | --- |
+| `<leader>tn` | Run nearest test |
+| `<leader>tf` | Run current file's tests |
+| `<leader>td` | Debug nearest test |
+| `<leader>ts` | Toggle test summary |
+| `<leader>to` | Open test output |
+| `<leader>Db` | Toggle breakpoint |
+| `<leader>Dc` | Continue debugging |
+| `<leader>Du` | Toggle debug UI |
 
 ## Personal Mappings Preserved
 

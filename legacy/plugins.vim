@@ -30,7 +30,6 @@ if dein#load_state('~/.local/share/dein')
   call dein#add('scrooloose/nerdcommenter')
   call dein#add('jiangmiao/auto-pairs')
   call dein#add('tmhedberg/matchit')
-  call dein#add('arnaud-lb/vim-php-namespace')
 
   "GUI
   call dein#add('vim-airline/vim-airline')

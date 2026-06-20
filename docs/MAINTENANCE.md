@@ -14,6 +14,8 @@
 | `:checkhealth` | Run full health checks |
 | `:checkhealth vim.lsp` | Diagnose LSP |
 | `:ConformInfo` | Diagnose formatting |
+| `:MasonInstall rust-analyzer codelldb debugpy basedpyright ruff taplo` | Install Rust/Python tools |
+| `:RenderMarkdown toggle` | Toggle Markdown preview rendering |
 
 ## Updating Everything
 
@@ -66,6 +68,25 @@ Use `:help lspconfig-all` to inspect available server names and root markers.
 3. Run `:MasonToolsUpdate`.
 4. Run `:ConformInfo` in a matching file.
 
+## Rust and Python Tooling
+
+Rust uses `rustaceanvim`, so do not add `rust_analyzer` to generic
+`mason-lspconfig` auto-enable. Mason installs `rust-analyzer` and `codelldb`,
+but rustaceanvim owns the LSP client and Rust-specific commands.
+
+Python uses `basedpyright` and `ruff`. Mason installs both. Conform uses Ruff
+for import organization and formatting, and `venv-selector.nvim` provides
+`<leader>cv` for selecting project virtualenvs.
+
+Useful stack checks:
+
+```vim
+:Mason
+:LspInfo
+:ConformInfo
+:checkhealth vim.lsp
+```
+
 ## Troubleshooting
 
 ### Plugins did not install
@@ -106,6 +127,9 @@ Common causes:
 - the filetype is not detected
 - the project does not contain an expected root marker such as `.git` or
   `package.json`
+- Rust projects should contain `Cargo.toml`
+- Python projects should use a detectable root such as `.git`, `pyproject.toml`,
+  `setup.py`, or `requirements.txt`
 
 ### Formatting does not run
 
@@ -117,6 +141,51 @@ Run:
 
 Confirm the formatter is installed in Mason and mapped in
 `lua/plugins/format.lua`.
+
+### Markdown preview does not render
+
+Open a Markdown file and run:
+
+```vim
+:RenderMarkdown toggle
+```
+
+If the command is missing, run `:Lazy sync` and reopen Neovim. If the buffer is
+not detected as Markdown, run `:set filetype?`.
+
+### TOML tooling does not attach
+
+Run:
+
+```vim
+:LspInfo
+:Mason
+:ConformInfo
+```
+
+Confirm `taplo` is installed and the buffer filetype is `toml`.
+
+### Python virtualenv is wrong
+
+Run:
+
+```vim
+:VenvSelect
+```
+
+Pick the project virtualenv, then reopen the Python buffer or restart the LSP
+client with `:LspRestart`.
+
+### Rust debugging is unavailable
+
+Confirm `codelldb` is installed:
+
+```vim
+:Mason
+```
+
+Rust debuggables are exposed through rustaceanvim with `<leader>rd` in a Rust
+buffer.
 
 ## Legacy Config
 

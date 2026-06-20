@@ -42,6 +42,14 @@ The leader key is comma: `,`.
 | `<leader>m` | Insert | Append semicolon to end of line |
 | `<leader>cf` | Normal/Visual | Format buffer or range |
 
+## Markdown
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>mp` | Normal | Toggle Markdown preview |
+| `<leader>me` | Normal | Expand Markdown preview |
+| `<leader>mc` | Normal | Contract Markdown preview |
+
 ## Registers and Clipboard
 
 | Mapping | Mode | Action |
@@ -78,6 +86,48 @@ The leader key is comma: `,`.
 | `<leader>ev` | Normal | Edit main Neovim config |
 | `<leader>epl` | Normal | Edit plugin specs directory |
 | `<leader>ecs` | Normal | Edit core config directory |
+
+## Python
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>cv` | Normal | Select Python virtualenv |
+
+## Rust
+
+These mappings are available in Rust buffers.
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>ra` | Normal | Rust code action |
+| `<leader>rh` | Normal | Rust hover actions |
+| `<leader>rr` | Normal | Rust runnables |
+| `<leader>rt` | Normal | Rust testables |
+| `<leader>rd` | Normal | Rust debuggables |
+| `<leader>rm` | Normal | Expand Rust macro |
+
+## Tests
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>tn` | Normal | Run nearest test |
+| `<leader>tf` | Normal | Run current file's tests |
+| `<leader>td` | Normal | Debug nearest test |
+| `<leader>ts` | Normal | Toggle test summary |
+| `<leader>to` | Normal | Open test output |
+
+## Debugging
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>Db` | Normal | Toggle breakpoint |
+| `<leader>Dc` | Normal | Continue debugging |
+| `<leader>Di` | Normal | Step into |
+| `<leader>Do` | Normal | Step over |
+| `<leader>DO` | Normal | Step out |
+| `<leader>Dl` | Normal | Run last debug session |
+| `<leader>Dr` | Normal | Open debug REPL |
+| `<leader>Du` | Normal | Toggle debug UI |
 
 ## LSP Defaults
 

@@ -275,10 +275,6 @@ call <sid>hi("NERDTreeDirSlash",  s:gui0D, "", s:cterm0D, "", "") "{{{
 call <sid>hi("NERDTreeExecFile",  s:gui05, "", s:cterm05, "", "")
 call <sid>hi("NERDTreeOpenable",  s:gui05, "", s:cterm05, "", "bold") "}}}
 
-" PHP highlighting
-call <sid>hi("phpMemberSelector",  s:gui05, "", s:cterm05, "", "") "{{{
-call <sid>hi("phpComparison",      s:gui05, "", s:cterm05, "", "")
-call <sid>hi("phpParent",          s:gui05, "", s:cterm05, "", "") "}}}
 
 " Python highlighting
 call <sid>hi("pythonOperator",  s:gui0E, "", s:cterm0E, "", "") "{{{

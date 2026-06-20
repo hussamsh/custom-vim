@@ -25,6 +25,11 @@ plugin spec from `lua/plugins`.
 | `git.lua` | Fugitive and Gitsigns |
 | `treesitter.lua` | Treesitter parser installation and startup |
 | `lsp.lua` | Mason, LSP server setup, external tools |
+| `markdown.lua` | In-editor Markdown preview rendering |
+| `rust.lua` | rustaceanvim and Rust-specific actions |
+| `python.lua` | Python virtualenv selection |
+| `debug.lua` | nvim-dap, DAP UI, Python debugging |
+| `test.lua` | neotest adapters for Python and Rust |
 | `completion.lua` | blink.cmp completion |
 | `format.lua` | conform.nvim formatting and nvim-lint linting |
 
@@ -38,9 +43,13 @@ The config lazy-loads most plugins by event, command, filetype, or keymap:
 - Oil loads on `:Oil`, `-`, or `<C-n>`.
 - Telescope loads on `:Telescope` or the configured Telescope mappings.
 - LSP tooling loads before reading or creating files.
+- Debugging and test tooling loads from its keymaps.
+- Markdown preview loads for Markdown files or from `:RenderMarkdown`.
 
 Catppuccin and Treesitter are intentionally not lazy-loaded because they affect
-the editing experience immediately.
+the editing experience immediately. rustaceanvim is also loaded at startup
+because it installs Rust filetype integration and owns the `rust-analyzer`
+client.
 
 ## LSP Design
 
@@ -65,24 +74,32 @@ This avoids the deprecated `require("lspconfig").server.setup({})` API.
 
 Language servers:
 
+- `basedpyright`
 - `bash-language-server`
 - `css-lsp`
 - `html-lsp`
-- `intelephense`
 - `json-lsp`
 - `lua-language-server`
+- `ruff`
 - `tailwindcss-language-server`
+- `taplo`
 - `typescript-language-server`
 - `yaml-language-server`
 
 Developer tools:
 
+- `codelldb`
+- `debugpy`
 - `eslint_d`
-- `php-cs-fixer`
 - `prettier`
+- `rust-analyzer`
 - `shfmt`
 - `stylua`
 - `tree-sitter-cli`
+
+`rust-analyzer` is installed by Mason but excluded from generic
+`mason-lspconfig` auto-enable. rustaceanvim starts it so Rust-specific features
+and DAP integration work correctly.
 
 ## Completion
 
@@ -104,12 +121,69 @@ used through blink.cmp.
 | --- | --- |
 | CSS/HTML/JS/JSON/Markdown/TS/YAML | `prettier` |
 | Lua | `stylua` |
-| PHP | `php-cs-fixer` |
+| Python | `ruff_organize_imports`, `ruff_format` |
+| Rust | `rustfmt` |
 | Shell | `shfmt` |
+| TOML | `taplo` |
 
 Manual formatting is available with `<leader>cf`.
+
+## Markdown Preview
+
+`render-markdown.nvim` renders Markdown structure directly inside Neovim. It is
+configured in `lua/plugins/markdown.lua` and loads for Markdown buffers or the
+`:RenderMarkdown` command.
+
+Useful commands and mappings:
+
+| Command or mapping | Purpose |
+| --- | --- |
+| `:RenderMarkdown toggle` / `<leader>mp` | Toggle rendered Markdown preview |
+| `:RenderMarkdown expand` / `<leader>me` | Expand rendered Markdown sections |
+| `:RenderMarkdown contract` / `<leader>mc` | Contract rendered Markdown sections |
+
+## TOML Tooling
+
+TOML support uses three layers:
+
+- Treesitter parser: syntax, indentation, and folding.
+- `taplo` LSP: diagnostics, completion, hover, and document symbols.
+- `taplo` formatter: format on save through Conform.
+
+This applies to files such as `Cargo.toml`, `pyproject.toml`, and other
+`*.toml` configuration files.
 
 ## Linting
 
 `nvim-lint` runs `eslint_d` for JavaScript and TypeScript filetypes. It triggers
 on buffer read, buffer write, and leaving insert mode.
+
+## Python Tooling
+
+Python support is centered on fast project feedback:
+
+- `basedpyright` for type checking, go-to-definition, imports, and symbols.
+- `ruff` for lint diagnostics plus import organization and formatting on save.
+- `venv-selector.nvim` for switching the active virtualenv from Telescope.
+- `nvim-dap-python` plus Mason's `debugpy-adapter` for debugging.
+- `neotest-python` for pytest runs and debug sessions.
+
+Use `<leader>cv` to select a virtualenv for the current project. Use
+`:ConformInfo`, `:LspInfo`, and `:checkhealth vim.lsp` when diagnosing Python
+tooling.
+
+## Rust Tooling
+
+Rust support is intentionally not a plain `lspconfig.rust_analyzer` setup.
+`rustaceanvim` configures `rust-analyzer` and exposes Rust-specific commands:
+
+- code actions
+- hover actions
+- Cargo runnables
+- testables
+- LLDB-backed debuggables
+- macro expansion
+
+The config enables all Cargo features by default and runs `clippy` for checks
+when rust-analyzer asks Cargo to check the project. `codelldb` is installed by
+Mason for Rust debugging.
