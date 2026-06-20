@@ -1,6 +1,22 @@
 local augroup = vim.api.nvim_create_augroup
 local autocmd = vim.api.nvim_create_autocmd
 
+local function ensure_parent_dir_exists(args)
+	local filename = args.file
+	if filename == "" then
+		return
+	end
+
+	local parent = vim.fs.dirname(vim.fs.normalize(filename))
+	if not parent or parent == "." then
+		return
+	end
+
+	if vim.fn.isdirectory(parent) == 0 then
+		vim.fn.mkdir(parent, "p")
+	end
+end
+
 autocmd("TextYankPost", {
 	group = augroup("highlight_yank", { clear = true }),
 	callback = function()
@@ -24,4 +40,9 @@ autocmd("FileType", {
 	callback = function()
 		vim.opt_local.formatoptions:remove({ "c", "r", "o" })
 	end,
+})
+
+autocmd({ "BufNewFile", "BufWritePre" }, {
+	group = augroup("create_parent_dirs", { clear = true }),
+	callback = ensure_parent_dir_exists,
 })

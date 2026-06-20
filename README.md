@@ -98,6 +98,8 @@ clipboard integration, and Mason's binary path.
 - highlight yanked text
 - restore cursor position when reopening files
 - remove comment continuation from format options
+- create missing parent directories for new files opened with `:e` or written
+  from another buffer creation path
 
 `lazy.lua` bootstraps lazy.nvim and loads plugin specs from `lua/plugins`.
 

@@ -17,6 +17,18 @@
 | `:MasonInstall rust-analyzer codelldb debugpy basedpyright ruff taplo` | Install Rust/Python tools |
 | `:RenderMarkdown toggle` | Toggle Markdown preview rendering |
 
+## Editing New Nested Files
+
+Opening a new file with a missing parent directory now creates that directory
+automatically:
+
+```vim
+:e lua/new/module/init.lua
+```
+
+The same helper also runs before writes, so buffers created through other
+commands still get their parent directories created before saving.
+
 ## Updating Everything
 
 Run these inside Neovim:
