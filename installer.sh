@@ -1,89 +1,36 @@
-#!/bin/sh
-# Standalone installer for Unixs
-# Original version is created by shoma2da
-# https://github.com/shoma2da/neobundle_installer
+#!/usr/bin/env sh
+set -eu
 
-if [ $# -ne 1 ]; then
-  echo "You must specify the installation directory!"
+repo_dir=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+config_dir="${XDG_CONFIG_HOME:-$HOME/.config}/nvim"
+backup_dir="${config_dir}.backup.$(date +%Y%m%d%H%M%S)"
+
+if ! command -v nvim >/dev/null 2>&1; then
+  echo "Neovim is not installed or is not on PATH."
   exit 1
 fi
 
-# Convert the installation directory to absolute path
-case $1 in
-  /*) PLUGIN_DIR=$1;;
-  *) PLUGIN_DIR=$PWD/$1;;
-esac
-INSTALL_DIR="${PLUGIN_DIR}/repos/github.com/Shougo/dein.vim"
-echo "Install to \"$INSTALL_DIR\"..."
-if [ -e "$INSTALL_DIR" ]; then
-  echo "\"$INSTALL_DIR\" already exists!"
-fi
-
-echo ""
-
-# check git command
-type git || {
-  echo 'Please install git or update your path to include the git executable!'
+if ! command -v git >/dev/null 2>&1; then
+  echo "Git is not installed or is not on PATH."
   exit 1
-}
-echo ""
-
-# make plugin dir and fetch dein
-if ! [ -e "$INSTALL_DIR" ]; then
-  echo "Begin fetching dein..."
-  mkdir -p "$PLUGIN_DIR"
-  git clone https://github.com/Shougo/dein.vim "$INSTALL_DIR"
-  echo "Done."
-  echo ""
 fi
 
-# write initial setting for .vimrc
-echo "Please add the following settings for dein to the top of your vimrc (Vim) or init.vim (NeoVim) file:"
-{
-    echo ""
-    echo ""
-    echo "\"dein Scripts-----------------------------"
-    echo "if &compatible"
-    echo "  set nocompatible               \" Be iMproved"
-    echo "endif"
-    echo ""
-    echo "\" Required:"
-    echo "set runtimepath+=$INSTALL_DIR"
-    echo ""
-    echo "\" Required:"
-    echo "if dein#load_state('$PLUGIN_DIR')"
-    echo "  call dein#begin('$PLUGIN_DIR')"
-    echo ""
-    echo "  \" Let dein manage dein"
-    echo "  \" Required:"
-    echo "  call dein#add('$INSTALL_DIR')"
-    echo ""
-    echo "  \" Add or remove your plugins here:"
-    echo "  call dein#add('Shougo/neosnippet.vim')"
-    echo "  call dein#add('Shougo/neosnippet-snippets')"
-    echo ""
-    echo "  \" You can specify revision/branch/tag."
-    echo "  call dein#add('Shougo/vimshell', { 'rev': '3787e5' })"
-    echo ""
-    echo "  \" Required:"
-    echo "  call dein#end()"
-    echo "  call dein#save_state()"
-    echo "endif"
-    echo ""
-    echo "\" Required:"
-    echo "filetype plugin indent on"
-    echo "syntax enable"
-    echo ""
-    echo "\" If you want to install not installed plugins on startup."
-    echo "\"if dein#check_install()"
-    echo "\"  call dein#install()"
-    echo "\"endif"
-    echo ""
-    echo "\"End dein Scripts-------------------------"
-    echo ""
-    echo ""
-}
+mkdir -p "$(dirname "$config_dir")"
 
-echo "Done."
+if [ -L "$config_dir" ]; then
+  current_target=$(readlink "$config_dir")
+  if [ "$current_target" = "$repo_dir" ]; then
+    echo "$config_dir already points to this repository."
+    exit 0
+  fi
+  mv "$config_dir" "$backup_dir"
+  echo "Moved existing symlink to $backup_dir"
+elif [ -e "$config_dir" ]; then
+  mv "$config_dir" "$backup_dir"
+  echo "Moved existing config to $backup_dir"
+fi
 
-echo "Complete setup dein!"
+ln -s "$repo_dir" "$config_dir"
+echo "Linked $repo_dir -> $config_dir"
+
+echo "Start Neovim and run :Lazy sync if plugins do not install automatically."

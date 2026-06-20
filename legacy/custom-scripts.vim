@@ -35,4 +35,3 @@ endif
 echo "Already inside the project"
 endfunction
 
-
