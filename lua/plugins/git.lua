@@ -7,6 +7,85 @@ return {
 		},
 	},
 	{
+		"sindrets/diffview.nvim",
+		cmd = {
+			"DiffviewOpen",
+			"DiffviewFileHistory",
+			"DiffviewClose",
+			"DiffviewToggleFiles",
+			"DiffviewFocusFiles",
+			"DiffviewRefresh",
+		},
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		keys = {
+			{ "<leader>gd", "<cmd>DiffviewOpen<cr>", desc = "Git diff workspace" },
+			{ "<leader>gD", "<cmd>DiffviewClose<cr>", desc = "Close Git diff" },
+			{ "<leader>gh", "<cmd>DiffviewFileHistory<cr>", desc = "Git history" },
+			{ "<leader>gH", "<cmd>DiffviewFileHistory %<cr>", desc = "Git file history" },
+		},
+		opts = {
+			enhanced_diff_hl = true,
+			view = {
+				default = {
+					layout = "diff2_horizontal",
+				},
+				file_history = {
+					layout = "diff2_horizontal",
+				},
+			},
+			file_panel = {
+				listing_style = "tree",
+				win_config = {
+					position = "left",
+					width = 35,
+				},
+			},
+			file_history_panel = {
+				win_config = {
+					position = "bottom",
+					height = 16,
+				},
+			},
+		},
+	},
+	{
+		"isakbm/gitgraph.nvim",
+		dependencies = {
+			"sindrets/diffview.nvim",
+		},
+		keys = {
+			{
+				"<leader>gl",
+				function()
+					require("gitgraph").draw({}, { all = true, max_count = 5000 })
+				end,
+				desc = "Git commit graph",
+			},
+		},
+		opts = {
+			git_cmd = "git",
+			symbols = {
+				merge_commit = "M",
+				commit = "*",
+			},
+			format = {
+				timestamp = "%Y-%m-%d %H:%M",
+				fields = { "hash", "timestamp", "author", "branch_name", "tag" },
+			},
+			hooks = {
+				on_select_commit = function(commit)
+					vim.cmd("DiffviewOpen " .. commit.hash .. "^!")
+				end,
+				on_select_range_commit = function(from, to)
+					vim.cmd("DiffviewOpen " .. from.hash .. "~1.." .. to.hash)
+				end,
+			},
+		},
+	},
+	{
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPost", "BufNewFile" },
 		opts = {

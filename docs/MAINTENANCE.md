@@ -13,9 +13,16 @@
 | `:TSUpdate` | Update Treesitter parsers |
 | `:checkhealth` | Run full health checks |
 | `:checkhealth vim.lsp` | Diagnose LSP |
+| `:checkhealth neo-tree` | Diagnose Neo-tree dependencies and config |
+| `:checkhealth molten` | Diagnose notebook runtime support |
 | `:ConformInfo` | Diagnose formatting |
 | `:MasonInstall rust-analyzer codelldb debugpy basedpyright ruff taplo` | Install Rust/Python tools |
+| `:Neotree filesystem reveal right` | Open the primary file tree |
+| `:MoltenInit nvim-python` | Start the dedicated Neovim notebook kernel |
 | `:RenderMarkdown toggle` | Toggle Markdown preview rendering |
+| `:ParquetView path/to/data.parquet` | Preview a Parquet file with DuckDB |
+| `:DiffviewOpen` | Review working tree/index changes in Diffview |
+| `:DiffviewFileHistory` | Review repository history in Diffview |
 
 ## Editing New Nested Files
 
@@ -64,6 +71,119 @@ return {
 }
 ```
 
+## Git Graph And Diff Review
+
+The Git graph workflow lives in `lua/plugins/git.lua` and uses
+`gitgraph.nvim` with `diffview.nvim`.
+
+Use `<leader>gl` to open the commit graph. Press `Enter` on a commit to open
+that commit's changed files in Diffview. Visual-select a range in the graph and
+press `Enter` to review the range.
+
+Useful direct commands:
+
+```vim
+:DiffviewOpen
+:DiffviewFileHistory
+:DiffviewFileHistory %
+```
+
+After changing this workflow, verify startup and plugin loading:
+
+```sh
+nvim --headless "+lua require('diffview')" "+lua require('gitgraph')" "+lua print('git graph plugins ok')" +qa
+```
+
+## Parquet Preview
+
+`:ParquetView` is a local command, not a lazy.nvim plugin. It lives in
+`lua/config/parquet.lua` and requires the `duckdb` CLI on `PATH`.
+
+Usage:
+
+```vim
+:ParquetView path/to/data.parquet
+:ParquetView % 500
+```
+
+The final numeric argument is the row limit. If no file is provided, the command
+uses the current buffer path. Keep this documented when changing the output
+format, command name, or dependency.
+
+## Notebook Runtime
+
+Notebook execution uses a dedicated Python virtualenv:
+
+```sh
+uv venv ~/.local/share/nvim/python
+uv pip install --python ~/.local/share/nvim/python/bin/python pynvim jupyter jupytext jupyter_client nbformat ipykernel pillow cairosvg plotly pnglatex pyperclip
+~/.local/share/nvim/python/bin/python -m ipykernel install --user --name nvim-python --display-name "Python (nvim)"
+mkdir -p ~/.local/share/jupyter/runtime
+```
+
+`lua/config/options.lua` uses this virtualenv for Neovim's Python provider when
+it exists. Keep the runtime available if changing Molten, Jupytext, or notebook
+keymaps.
+
+After notebook plugin updates, run:
+
+```vim
+:UpdateRemotePlugins
+:checkhealth provider
+:checkhealth molten
+:MoltenInit nvim-python
+```
+
+If Molten reports a missing `kernel-*.json` connection file, recreate
+`~/.local/share/jupyter/runtime`.
+
+### Project Virtualenv Kernels
+
+Molten executes code through Jupyter kernels. `:VenvSelect` changes editor
+tooling, but it does not change the notebook execution target. Register each
+project `.venv` as a Jupyter kernel, then select that kernel with
+`:MoltenInit`.
+
+From a project root with `.venv`:
+
+```sh
+uv pip install --python .venv/bin/python ipykernel
+.venv/bin/python -m ipykernel install --user --name project-name --display-name "Python (project-name)"
+```
+
+Use a short, stable `--name`; this is what `:MoltenInit` uses. The display name
+is only the human-readable label.
+
+List available kernels:
+
+```sh
+~/.local/share/nvim/python/bin/jupyter kernelspec list
+```
+
+Start a specific project kernel inside Neovim:
+
+```vim
+:MoltenInit project-name
+```
+
+If you run `:MoltenInit` without an argument, Molten prompts with the available
+kernels.
+
+Delete a stale kernel:
+
+```sh
+~/.local/share/nvim/python/bin/jupyter kernelspec uninstall project-name
+```
+
+Inspect a kernel definition when debugging:
+
+```sh
+cat ~/.local/share/jupyter/kernels/project-name/kernel.json
+```
+
+The `argv[0]` entry should point at the intended virtualenv Python executable,
+such as `/path/to/project/.venv/bin/python`.
+
 ## Adding an LSP Server
 
 1. Add the server name to `ensure_installed` in `lua/plugins/lsp.lua`.
@@ -80,7 +200,11 @@ Use `:help lspconfig-all` to inspect available server names and root markers.
 3. Run `:MasonToolsUpdate`.
 4. Run `:ConformInfo` in a matching file.
 
-## Rust and Python Tooling
+## Go, Rust, and Python Tooling
+
+Go uses `gopls` through `mason-lspconfig`. Mason installs `goimports`, and
+Conform formats Go files with `goimports` and `gofmt`. Treesitter installs the
+`go` parser for Go highlighting, indentation, and folding.
 
 Rust uses `rustaceanvim`, so do not add `rust_analyzer` to generic
 `mason-lspconfig` auto-enable. Mason installs `rust-analyzer` and `codelldb`,

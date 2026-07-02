@@ -22,7 +22,9 @@ The leader key is comma: `,`.
 | `<leader><space>` | Normal | Clear search highlights |
 | `<leader>nh` | Normal | Clear search highlights |
 | `-` | Normal | Open Oil file explorer |
-| `<C-n>` | Normal | Open Oil file explorer |
+| `<C-n>` | Normal | Toggle Neo-tree and reveal current file |
+| `<leader>ft` | Normal | Focus Neo-tree and reveal current file |
+| `<leader>fT` | Normal | Close Neo-tree |
 | `<leader>ff` | Normal | Telescope find files |
 | `<leader>fg` | Normal | Telescope live grep |
 | `<leader>fb` | Normal | Telescope buffers |
@@ -50,6 +52,32 @@ The leader key is comma: `,`.
 | `<leader>me` | Normal | Expand Markdown preview |
 | `<leader>mc` | Normal | Contract Markdown preview |
 
+## Notebooks
+
+These mappings are for `.ipynb` files opened through Jupytext or Python files
+using `# %%` cell markers.
+
+| Mapping | Mode | Action |
+| --- | --- | --- |
+| `<leader>ni` | Normal | Initialize notebook kernel |
+| `<leader>nn` | Normal | Run current notebook cell |
+| `<leader>nm` | Normal | Run current notebook cell and move down |
+| `<leader>na` | Normal | Run all notebook cells |
+| `<leader>nb` | Normal | Add notebook cell below |
+| `<leader>nB` | Normal | Add notebook cell above |
+| `]n` | Normal | Move to next notebook cell |
+| `[n` | Normal | Move to previous notebook cell |
+| `<leader>nl` | Normal | Run current notebook line |
+| `<leader>nr` | Normal | Re-run active notebook cell |
+| `<leader>ne` | Normal/Visual | Run operator or visual selection |
+| `<leader>no` | Normal | Show notebook output |
+| `<leader>nH` | Normal | Hide notebook output |
+| `<leader>nd` | Normal | Delete notebook output |
+| `<leader>nI` | Normal | Import notebook outputs |
+| `<leader>nE` | Normal | Export notebook outputs |
+| `<leader>nR` | Normal | Restart notebook kernel |
+| `<leader>nq` | Normal | Stop notebook kernel |
+
 ## Registers and Clipboard
 
 | Mapping | Mode | Action |
@@ -72,12 +100,22 @@ The leader key is comma: `,`.
 | Mapping | Mode | Action |
 | --- | --- | --- |
 | `<leader>gg` | Normal | Open Fugitive Git status |
+| `<leader>gl` | Normal | Open interactive commit graph |
+| `<leader>gd` | Normal | Open working tree/index diff in Diffview |
+| `<leader>gD` | Normal | Close Diffview |
+| `<leader>gh` | Normal | Open repository history in Diffview |
+| `<leader>gH` | Normal | Open current file history in Diffview |
+| `<leader>gT` | Normal | Open Neo-tree git status tree |
 | `]c` | Normal | Next Git hunk |
 | `[c` | Normal | Previous Git hunk |
 | `<leader>gb` | Normal | Blame current line |
 | `<leader>gp` | Normal | Preview current hunk |
 | `<leader>gr` | Normal | Reset current hunk |
 | `<leader>gs` | Normal | Stage current hunk |
+
+Inside the commit graph, press `Enter` on a commit to open that commit in
+Diffview. Visual-select a commit range and press `Enter` to diff the selected
+range.
 
 ## Configuration
 
@@ -135,6 +173,9 @@ Neovim 0.12 provides default LSP mappings when an LSP client attaches:
 
 | Mapping | Action |
 | --- | --- |
+| `gd` | Go to definition |
+| `gD` | Go to declaration |
+| `gy` | Go to type definition |
 | `grn` | Rename symbol |
 | `gra` | Code action |
 | `grr` | References |

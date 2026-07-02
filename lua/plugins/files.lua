@@ -1,14 +1,62 @@
 return {
 	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		lazy = false,
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"nvim-tree/nvim-web-devicons",
+		},
+		keys = {
+			{ "<C-n>", "<cmd>Neotree toggle reveal right<cr>", desc = "Toggle file tree" },
+			{ "<leader>ft", "<cmd>Neotree focus reveal right<cr>", desc = "Focus file tree" },
+			{ "<leader>fT", "<cmd>Neotree close<cr>", desc = "Close file tree" },
+			{ "<leader>gT", "<cmd>Neotree git_status float<cr>", desc = "Git status tree" },
+		},
+		opts = {
+			close_if_last_window = true,
+			enable_diagnostics = true,
+			enable_git_status = true,
+			source_selector = {
+				winbar = true,
+				sources = {
+					{ source = "filesystem" },
+					{ source = "buffers" },
+					{ source = "git_status" },
+				},
+			},
+			window = {
+				position = "right",
+				width = 32,
+				mappings = {
+					["P"] = { "toggle_preview", config = { use_float = false } },
+				},
+			},
+			filesystem = {
+				follow_current_file = {
+					enabled = true,
+				},
+				group_empty_dirs = true,
+				hijack_netrw_behavior = "open_default",
+				use_libuv_file_watcher = true,
+				filtered_items = {
+					visible = true,
+					hide_dotfiles = false,
+					hide_gitignored = false,
+				},
+			},
+		},
+	},
+	{
 		"stevearc/oil.nvim",
 		cmd = "Oil",
 		keys = {
 			{ "-", "<cmd>Oil<cr>", desc = "Open parent directory" },
-			{ "<C-n>", "<cmd>Oil<cr>", desc = "Open file explorer" },
 		},
 		dependencies = { "nvim-tree/nvim-web-devicons" },
 		opts = {
-			default_file_explorer = true,
+			default_file_explorer = false,
 			view_options = {
 				show_hidden = true,
 			},

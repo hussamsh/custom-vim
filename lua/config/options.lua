@@ -6,6 +6,14 @@ vim.g.maplocalleader = ","
 local mason_bin = vim.fn.stdpath("data") .. "/mason/bin"
 vim.env.PATH = mason_bin .. ":" .. vim.env.PATH
 
+local nvim_python = vim.fn.stdpath("data") .. "/python"
+local nvim_python_bin = nvim_python .. "/bin"
+local nvim_python_host = nvim_python_bin .. "/python"
+if vim.uv.fs_stat(nvim_python_host) then
+	vim.g.python3_host_prog = nvim_python_host
+	vim.env.PATH = nvim_python_bin .. ":" .. vim.env.PATH
+end
+
 opt.number = true
 opt.relativenumber = true
 opt.mouse = "a"

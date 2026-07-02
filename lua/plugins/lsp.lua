@@ -50,11 +50,28 @@ return {
 				filetypes = { "yaml" },
 			})
 
+			vim.api.nvim_create_autocmd("LspAttach", {
+				group = vim.api.nvim_create_augroup("lsp_keymaps", { clear = true }),
+				callback = function(event)
+					local opts = { buffer = event.buf }
+					vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, {
+						desc = "Go to definition",
+					}))
+					vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, {
+						desc = "Go to declaration",
+					}))
+					vim.keymap.set("n", "gy", vim.lsp.buf.type_definition, vim.tbl_extend("force", opts, {
+						desc = "Go to type definition",
+					}))
+				end,
+			})
+
 			require("mason-lspconfig").setup({
 				ensure_installed = {
 					"basedpyright",
 					"bashls",
 					"cssls",
+					"gopls",
 					"html",
 					"jsonls",
 					"lua_ls",
@@ -80,6 +97,7 @@ return {
 				"codelldb",
 				"debugpy",
 				"eslint_d",
+				"goimports",
 				"prettier",
 				"rust-analyzer",
 				"shfmt",
